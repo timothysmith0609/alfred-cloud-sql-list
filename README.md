@@ -8,10 +8,11 @@ Easily navigate to the db you want
 ## Usage
 
 `csql [QUERY]`
+`csql-refresh`
+
 Press enter to open the CloudSQL instance in your browser
 ![csql invocation](screenshots/DBlist.png)
 
-`csql-refresh`
 press enter to update the cache of CloudSQL instances (default TTL = 300 seconds)
 ![csql invocation](screenshots/cache_refresh.png)
 
