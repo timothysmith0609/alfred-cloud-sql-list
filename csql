@@ -1,0 +1,129 @@
+#!/usr/bin/env ruby
+
+require 'google/apis/sqladmin_v1beta4'
+require 'json'
+require 'net/http'
+require 'cgi'
+require 'open3'
+require 'pry'
+
+BASE_PATH = "https://console.cloud.google.com/sql/instances/"
+CACHE_FILE = 'sql_cache.json'
+TTL_OFFSET = 300 # seconds
+CLOUD_SQL_PATH = ENV["CLOUD_SQL_PATH"]
+
+class Cache
+  attr_reader :cache
+  attr_reader :file_name
+
+  def initialize(file_name)
+    @file_name = file_name
+    begin
+      if !File.exists?(file_name) || File.zero?(file_name)
+        file = File.new(file_name, 'w')
+        @cache = {
+          "deadline" => Time.now
+        }
+        file.write(@cache.to_json)
+      else
+        file = File.open(file_name, 'r')
+        @cache = JSON.parse(file.read)
+      end
+    rescue Exception => e
+      puts e.message
+      exit(-1)
+    ensure
+      file.close unless file.nil?
+    end
+  end
+
+  def instances
+    @cache.has_key?("instances") ? @cache["instances"] : {}
+  end
+
+  def expired
+    # explicit to_s in case reading from new file 
+    Time.parse(@cache["deadline"].to_s) < Time.now  
+  end
+
+  def update_cache
+    begin
+      sqlClient = CloudSQL.new
+      instances = sqlClient.getSQLs
+      instances_results = instances.map do |inst| 
+      {
+          "instance" => inst,
+      } 
+      end
+      @cache = {
+        "deadline" => Time.now + TTL_OFFSET, 
+        "instances" => instances_results
+      }
+      file = File.open(@file_name, 'w')
+      file.write(@cache.to_json)
+
+    rescue Exception => e
+      puts e.message
+      exit(-1)
+    ensure
+      file.close unless file.nil?
+    end
+  end
+
+  def length
+    return @cache["instances"].length || 0
+  end
+
+end
+class CloudSQL
+    def getSQLs
+        out, stat = Open3.capture2(CLOUD_SQL_PATH)
+        raise Exception unless stat.success?
+
+        instances = out.split("\n").map { |inst| inst.strip().split(' ') }.select { |inst| inst.length == 2 }
+        instances.map { |inst| inst[0] }
+    end
+end
+
+case ARGV[0]
+when '--search'
+  begin
+    cache = Cache.new(CACHE_FILE)
+    cache.update_cache if cache.expired
+    
+    results = cache.instances.map {|i|
+      i["instance"]
+    }
+    results = results.select {|arg| arg =~ /#{(ARGV[1])}/}
+    alfred_results = results.map do |inst|
+      {
+        "uid" => "csql-search-#{ARGV[1]}",
+        "title" => inst,
+        "subtitle" => BASE_PATH + inst,
+        "arg" => BASE_PATH + inst,
+        "autocomplete" => inst,
+        "quicklookurl" => BASE_PATH+inst
+      }
+    end
+    alfred_results = { "items" => alfred_results }.to_json
+    puts alfred_results
+  rescue Exception => e
+    alfred_results = [{
+    "title" => "Encountered an error!",
+    "subtitle" => e.message
+    }]
+    alfred_results = { "items" => alfred_results }.to_json
+    exit(-1)
+  end
+
+when '--refresh'
+  begin
+    cache = Cache.new(CACHE_FILE)
+    cache.update_cache
+    puts "Successfully updated cache (#{cache.length} records found)"
+  rescue Exception => e 
+    puts e.message
+    exit(-1)
+  end
+end
+
