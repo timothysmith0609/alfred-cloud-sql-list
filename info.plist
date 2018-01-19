@@ -257,6 +257,10 @@ fi
 		<key>CLOUD_SQL_PATH</key>
 		<string>/usr/local/bin/cloudsql</string>
 	</dict>
+	<key>variablesdontexport</key>
+	<array>
+		<string>CLOUD_SQL_PATH</string>
+	</array>
 	<key>version</key>
 	<string>1.0.0</string>
 	<key>webaddress</key>
