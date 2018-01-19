@@ -2,10 +2,7 @@
 
 require 'google/apis/sqladmin_v1beta4'
 require 'json'
-require 'net/http'
-require 'cgi'
 require 'open3'
-require 'pry'
 
 BASE_PATH = "https://console.cloud.google.com/sql/instances/"
 CACHE_FILE = 'sql_cache.json'
