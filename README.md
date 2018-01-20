@@ -1,9 +1,11 @@
 # Avoid CloudSQL Console Slowdowns
 Easily navigate to the db you want
 
+## Included
+- A simple go client to connect to the SQL API and list instances. Just run `./build` in the `go` directory of the workflow.
+
 ## Requirements
-- Ruby 2.3.3
-- A program that lists your cloudsql instances. This workflow currently relies on a closed-source implementation. Feel free to modify `csql` for your own needs. The workflow will look for a program pointed to by `CLOUD_SQL_PATH`. 
+- Alfred 3
 
 ## Usage
 
@@ -25,9 +27,10 @@ You can download the workflow from the [releases page](#)
 This workflow requires Alfred 3.
 
 **2. Environment variables**
-You will need to set the path to the CLI tool that lists your CloudSQL instances. Set `CLOUD_SQL_PATH` in your workflow environment variables accordingly.
-![goto environment settings](screenshots/env_var_settings.png)
-![set lister path](screenshots/set_sql_path.png)
+- Set `CLOUD_SQL_PATH` to the location of the `cloudsql` binary (source included in `go` folder)
+- Set `PROJECT` to the name of the Google project you want to search. This workflow uses the `golang.org/x/oauth2/google` library and loads your system's default auth, so make sure it accords with the `PROJECT` variable.
+![goto environment settings](screenshots/env_options.png)
+![set env vars](screenshots/env_vars.png)
 
 **3. Credentials**
 

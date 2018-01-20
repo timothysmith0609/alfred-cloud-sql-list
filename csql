@@ -3,11 +3,13 @@
 require 'google/apis/sqladmin_v1beta4'
 require 'json'
 require 'open3'
+require 'pry'
 
 BASE_PATH = "https://console.cloud.google.com/sql/instances/"
-CACHE_FILE = 'sql_cache.json'
+CACHE_FILE = "#{ENV["HOME"]}/.csql_cache.json"
 TTL_OFFSET = 300 # seconds
 CLOUD_SQL_PATH = ENV["CLOUD_SQL_PATH"]
+PROJECT = ENV["PROJECT"]
 
 class Cache
   attr_reader :cache
@@ -47,18 +49,12 @@ class Cache
     begin
       sqlClient = CloudSQL.new
       instances = sqlClient.getSQLs
-      instances_results = instances.map do |inst| 
-      {
-          "instance" => inst,
-      } 
-      end
       @cache = {
         "deadline" => Time.now + TTL_OFFSET, 
-        "instances" => instances_results
+        "instances" => instances
       }
       file = File.open(@file_name, 'w')
       file.write(@cache.to_json)
-
     rescue Exception => e
       puts e.message
       exit(-1)
@@ -74,11 +70,17 @@ class Cache
 end
 class CloudSQL
     def getSQLs
-        out, stat = Open3.capture2(CLOUD_SQL_PATH)
+        out, stat = Open3.capture2(CLOUD_SQL_PATH, "-project=#{PROJECT}")
         raise Exception unless stat.success?
 
-        instances = out.split("\n").map { |inst| inst.strip().split(' ') }.select { |inst| inst.length == 2 }
-        instances.map { |inst| inst[0] }
+        instances = out.split("\n").map { |inst| inst.split(' ') }
+        results = instances.map do |inst| 
+          {
+            "instance" => inst[0],
+            "type"     => inst[1]
+          }
+        end
+        results
     end
 end
 
@@ -88,18 +90,16 @@ when '--search'
     cache = Cache.new(CACHE_FILE)
     cache.update_cache if cache.expired
     
-    results = cache.instances.map {|i|
-      i["instance"]
-    }
-    results = results.select {|arg| arg =~ /#{(ARGV[1])}/}
+    results = cache.instances
+    results = results.select {|arg| arg["instance"] =~ /#{(ARGV[1])}/}  # Alfred matching won't match queries embedded with a larger string
     alfred_results = results.map do |inst|
       {
-        "uid" => "csql-search-#{ARGV[1]}",
-        "title" => inst,
-        "subtitle" => BASE_PATH + inst,
-        "arg" => BASE_PATH + inst,
-        "autocomplete" => inst,
-        "quicklookurl" => BASE_PATH+inst
+        "uid" => inst["instance"],
+        "title" => inst["instance"],
+        "subtitle" => inst["type"],
+        "arg" => BASE_PATH + inst["instance"],
+        "autocomplete" => inst["instance"],
+        "quicklookurl" => BASE_PATH+inst["instance"]
       }
     end
     alfred_results = { "items" => alfred_results }.to_json

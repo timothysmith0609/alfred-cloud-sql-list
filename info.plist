@@ -64,7 +64,7 @@
 				<key>alfredfiltersresults</key>
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
-				<integer>0</integer>
+				<integer>2</integer>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -84,15 +84,7 @@
 				<key>runningsubtext</key>
 				<string>getting instances...</string>
 				<key>script</key>
-				<string>if [[ "${rubypath}" ]]; then
-	export PATH="${rubypath}:$PATH"
-fi
-
-if [[ "${CLOUD_SQL_PATH}" ]]; then
-    export PATH="${cloudsql}:$PATH"
-fi
-
-./csql --search "{query}"</string>
+				<string>./csql --search "{query}"</string>
 				<key>scriptargtype</key>
 				<integer>0</integer>
 				<key>scriptfile</key>
@@ -192,11 +184,7 @@ esac</string>
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>script</key>
-				<string>if [[ "${CLOUD_SQL_PATH}" ]]; then
-    export PATH="${CLOUD_SQL_PATH}:$PATH"
-fi
-
-./csql --refresh</string>
+				<string>./csql --refresh</string>
 				<key>scriptargtype</key>
 				<integer>0</integer>
 				<key>scriptfile</key>
@@ -213,52 +201,59 @@ fi
 		</dict>
 	</array>
 	<key>readme</key>
-	<string></string>
+	<string>This workflow makes it easy to quickly access CloudSQL dashboards of your GCP project. It avoids the pain of going through the clunky cloud console UI.
+
+The cache used has a TTL of 5 minutes, or you can manually refresh with `csql-refresh`. 
+
+A small go client has been packaged with this workflow that will fetch all the instances of your GCP project. It relies on using the `golang.org/x/oauth2/google` library which will try to load your system's default credentials. If you are set up with the gcloud SDK, this should be seamless.</string>
 	<key>uidata</key>
 	<dict>
 		<key>003C99B5-C49B-433C-8960-1965C854D4B1</key>
 		<dict>
 			<key>xpos</key>
-			<integer>330</integer>
+			<integer>280</integer>
 			<key>ypos</key>
-			<integer>100</integer>
+			<integer>30</integer>
 		</dict>
 		<key>023D51FE-9EC7-44C5-8F61-0458085261B9</key>
 		<dict>
 			<key>xpos</key>
-			<integer>330</integer>
-			<key>ypos</key>
 			<integer>280</integer>
+			<key>ypos</key>
+			<integer>210</integer>
 		</dict>
 		<key>19691AAD-3498-419F-B0C3-202A24751666</key>
 		<dict>
 			<key>xpos</key>
-			<integer>570</integer>
+			<integer>470</integer>
 			<key>ypos</key>
-			<integer>280</integer>
+			<integer>210</integer>
 		</dict>
 		<key>665CC380-11D5-4C67-818C-15551A101FF3</key>
 		<dict>
 			<key>xpos</key>
-			<integer>130</integer>
+			<integer>80</integer>
 			<key>ypos</key>
-			<integer>280</integer>
+			<integer>210</integer>
 		</dict>
 		<key>EE6049DD-F6AE-409E-B837-08BF78A58C80</key>
 		<dict>
 			<key>xpos</key>
-			<integer>130</integer>
+			<integer>80</integer>
 			<key>ypos</key>
-			<integer>100</integer>
+			<integer>30</integer>
 		</dict>
 	</dict>
 	<key>variables</key>
 	<dict>
 		<key>CLOUD_SQL_PATH</key>
-		<string>/usr/local/bin/cloudsql</string>
+		<string>/Users/timothysmith/Library/Application Support/Alfred 3/Alfred.alfredpreferences/workflows/user.workflow.950863E3-8BD4-42D2-B69D-5DAC7B2DEF02/go/cloudsql</string>
+		<key>PROJECT</key>
+		<string>shopify-tiers</string>
 	</dict>
 	<key>variablesdontexport</key>
 	<array>
+		<string>PROJECT</string>
 		<string>CLOUD_SQL_PATH</string>
 	</array>
 	<key>version</key>
