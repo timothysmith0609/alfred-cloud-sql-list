@@ -1,9 +1,8 @@
 #!/usr/bin/env ruby
 
-require 'google/apis/sqladmin_v1beta4'
 require 'json'
 require 'open3'
-require 'pry'
+require 'time'
 
 BASE_PATH = "https://console.cloud.google.com/sql/instances/"
 CACHE_FILE = "#{ENV["HOME"]}/.csql_cache.json"

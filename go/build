@@ -1,1 +1,8 @@
+echo "Building ./cloudsql..."
 go build -o cloudsql
+if [ $? -eq 0 ]
+then
+  echo "Built cloudsql!, Don't forget to update the CLOUD_SQL_PATH workflow variable in Alfred!"
+else
+  echo "Something went wrong! \`go build -o cloudsql\` exited with code $?"
+fi

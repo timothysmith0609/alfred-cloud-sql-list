@@ -4,8 +4,6 @@
 <dict>
 	<key>bundleid</key>
 	<string>com.timothysmith.googlecloud</string>
-	<key>category</key>
-	<string>Tools</string>
 	<key>connections</key>
 	<dict>
 		<key>023D51FE-9EC7-44C5-8F61-0458085261B9</key>
@@ -247,7 +245,7 @@ A small go client has been packaged with this workflow that will fetch all the i
 	<key>variables</key>
 	<dict>
 		<key>CLOUD_SQL_PATH</key>
-		<string>/Users/timothysmith/Library/Application Support/Alfred 3/Alfred.alfredpreferences/workflows/user.workflow.950863E3-8BD4-42D2-B69D-5DAC7B2DEF02/go/cloudsql</string>
+		<string>/Users/timothysmith/Library/Application Support/Alfred 3/Alfred.alfredpreferences/workflows/user.workflow.2F663F06-C7E0-42FD-BA2F-18C05179C1DC/go/cloudsql</string>
 		<key>PROJECT</key>
 		<string>shopify-tiers</string>
 	</dict>
